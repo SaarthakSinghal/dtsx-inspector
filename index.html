@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-f/VP4nubw5HgP7IKrygqVWucKwtW55yb6ihXiVnoUQE='; style-src 'sha256-hzPAcDXwujpBrMD062Z/y6bjg5Aski8QmTHvfI1XwYw='; img-src data:; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bbt+If2q7hFBXGgnT1v+jVIkRZBX5UyYlXxh0B4npX4='; style-src 'sha256-hzPAcDXwujpBrMD062Z/y6bjg5Aski8QmTHvfI1XwYw='; img-src data:; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'none'">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#08090b">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='26' height='26' fill='%2308090b' stroke='%23f0aa42' stroke-width='3'/%3E%3Crect x='11' y='11' width='10' height='10' fill='%23f0aa42'/%3E%3C/svg%3E">
@@ -629,10 +629,10 @@
             </thead>
             <tbody>
               <tr>
-                <td id="tableSource">—</td>
-                <td id="tablePackage">—</td>
-                <td id="tableFormat">—</td>
-                <td id="tableProduct">—</td>
+                <td id="tableSource">Not available</td>
+                <td id="tablePackage">Not available</td>
+                <td id="tableFormat">Not available</td>
+                <td id="tableProduct">Not available</td>
                 <td id="tableReadBindings">0</td>
                 <td id="tableWriteBindings">0</td>
               </tr>
@@ -693,7 +693,7 @@
     </section>
 
     <div class="empty-state" id="emptyState">
-      <p id="emptyMessage">Nothing parsed yet — paste package XML above or load a .dtsx file.</p>
+      <p id="emptyMessage">Nothing parsed yet. Paste package XML above or load a .dtsx file.</p>
     </div>
 
     <footer class="security-footer" aria-label="Security and privacy">
@@ -915,8 +915,8 @@
       return {
         filename: filename || 'Pasted XML',
         packageName: packageElement ? displayName(packageElement, 'Package') : 'Package fragment',
-        formatVersion: packageElement ? (propertyValue(packageElement, 'PackageFormatVersion') || field(packageElement, 'PackageFormatVersion') || '—') : '—',
-        productVersion: packageElement ? (field(packageElement, 'LastModifiedProductVersion') || '—') : '—'
+        formatVersion: packageElement ? (propertyValue(packageElement, 'PackageFormatVersion') || field(packageElement, 'PackageFormatVersion') || 'Not available') : 'Not available',
+        productVersion: packageElement ? (field(packageElement, 'LastModifiedProductVersion') || 'Not available') : 'Not available'
       };
     }
 
@@ -1123,7 +1123,7 @@
 
       const shownValue = kind === 'variable' && item.expression ? item.expression : item.value;
       const valueLabel = kind === 'variable' && item.expression ? `Copy expression for ${item.qualifiedName}` : `Copy value for ${item.name}`;
-      row.append(copyButton(shownValue, valueLabel, `copy-value${shownValue === '' ? ' empty-value' : ''}`, shownValue === '' ? '— empty —' : shownValue));
+      row.append(copyButton(shownValue, valueLabel, `copy-value${shownValue === '' ? ' empty-value' : ''}`, shownValue === '' ? 'No value' : shownValue));
 
       const extras = [];
       if (kind === 'variable') {
@@ -1338,13 +1338,13 @@
           renderInitial();
           const total = state.params.length + state.vars.length + state.scripts.length;
           const message = total
-            ? `Parsed successfully — ${state.params.length} parameter${state.params.length === 1 ? '' : 's'}, ${state.vars.length} variable${state.vars.length === 1 ? '' : 's'}, ${state.scripts.length} Script Task${state.scripts.length === 1 ? '' : 's'}.`
+            ? `Parsed successfully: ${state.params.length} parameter${state.params.length === 1 ? '' : 's'}, ${state.vars.length} variable${state.vars.length === 1 ? '' : 's'}, ${state.scripts.length} Script Task${state.scripts.length === 1 ? '' : 's'}.`
             : 'Package parsed successfully, but no supported parameters, variables, or Script Task bindings were found.';
           setStatus(message, total ? 'ok' : 'warn');
         } catch (error) {
           refs.results.hidden = true;
           refs.emptyState.hidden = false;
-          refs.emptyMessage.textContent = 'No current results — correct the XML error above and parse again.';
+          refs.emptyMessage.textContent = 'No current results. Correct the XML error above and parse again.';
           setStatus(error instanceof InspectorError ? error.message : 'The package could not be inspected because of an unexpected browser parsing error.', 'error');
         } finally {
           setBusy(false);
@@ -1406,7 +1406,7 @@
         }
         showToast('Copied to clipboard');
       } catch {
-        showToast('Clipboard unavailable — select the text and copy it manually');
+        showToast('Clipboard unavailable. Select the text and copy it manually.');
       }
     }
 
@@ -1459,7 +1459,7 @@
       refs.filterInput.value = '';
       refs.results.hidden = true;
       refs.emptyState.hidden = false;
-      refs.emptyMessage.textContent = 'Nothing parsed yet — paste package XML above or load a .dtsx file.';
+      refs.emptyMessage.textContent = 'Nothing parsed yet. Paste package XML above or load a .dtsx file.';
       refs.sourceLine.textContent = 'Paste XML or drop a .dtsx/.xml file';
       refs.noticeList.replaceChildren();
       setInputHidden(false);
@@ -1487,7 +1487,7 @@
         state.filename = '';
         refs.sourceLine.textContent = 'Pasted or edited XML';
       }
-      if (!refs.results.hidden) setStatus('Input changed — parse again to refresh the results.', 'warn');
+      if (!refs.results.hidden) setStatus('Input changed. Parse again to refresh the results.', 'warn');
     });
     refs.xmlInput.addEventListener('keydown', event => {
       if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
