@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bbt+If2q7hFBXGgnT1v+jVIkRZBX5UyYlXxh0B4npX4='; style-src 'sha256-hzPAcDXwujpBrMD062Z/y6bjg5Aski8QmTHvfI1XwYw='; img-src data:; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-jBDsxY7Z/M6Vjiz0ofP4zW0JDEPhDwVzKYuC6I/NPrg='; style-src 'sha256-hzPAcDXwujpBrMD062Z/y6bjg5Aski8QmTHvfI1XwYw='; img-src data:; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'none'">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#08090b">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='26' height='26' fill='%2308090b' stroke='%23f0aa42' stroke-width='3'/%3E%3Crect x='11' y='11' width='10' height='10' fill='%23f0aa42'/%3E%3C/svg%3E">
@@ -926,10 +926,10 @@
       for (const element of elementsByLocalName(documentNode, 'PackageParameter')) {
         if (!element.parentElement || localName(element.parentElement) !== 'PackageParameters') continue;
         const dtsid = field(element, 'DTSID') || '';
-        const name = field(element, 'ObjectName') || '(unnamed parameter)';
+        const name = field(element, 'ObjectName') || field(element, 'Name') || '(unnamed parameter)';
         const valueElement = directChildren(element, 'Property').find(item => attribute(item, 'Name') === 'ParameterValue');
         const dataType = field(element, 'DataType') || (valueElement ? attribute(valueElement, 'DataType') : null);
-        const value = valueElement ? valueElement.textContent : '';
+        const value = valueElement ? valueElement.textContent : (field(element, 'Value', true) || '');
         const key = dtsid || `${name}\u0000${dataType}\u0000${value}`;
         if (seen.has(key)) continue;
         seen.add(key);
@@ -953,7 +953,7 @@
       for (const element of elementsByLocalName(documentNode, 'Variable')) {
         if (!element.parentElement || localName(element.parentElement) !== 'Variables') continue;
         const valueElement = directChild(element, 'VariableValue');
-        const name = field(element, 'ObjectName') || '(unnamed variable)';
+        const name = field(element, 'ObjectName') || field(element, 'Name') || '(unnamed variable)';
         const namespace = field(element, 'Namespace') || '';
         const scope = scopeFor(element);
         const dtsid = field(element, 'DTSID') || '';
@@ -984,7 +984,7 @@
     }
 
     function splitBindings(value) {
-      return String(value || '').split(',').map(item => item.trim()).filter(Boolean);
+      return String(value || '').split(/[;,]/).map(item => item.trim()).filter(Boolean);
     }
 
     function closestAncestor(element, name) {
@@ -1043,7 +1043,7 @@
 
       for (const executable of elementsByLocalName(documentNode, 'Executable')) {
         const project = projectByExecutable.get(executable);
-        const bindingSource = project || bindingSourceByExecutable.get(executable);
+        const bindingSource = bindingSourceByExecutable.get(executable) || project;
         if (!isScriptTaskExecutable(executable) && !project) continue;
         const source = bindingSource || executable;
         if (project) consumedProjects.add(project);
