@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-jBDsxY7Z/M6Vjiz0ofP4zW0JDEPhDwVzKYuC6I/NPrg='; style-src 'sha256-hzPAcDXwujpBrMD062Z/y6bjg5Aski8QmTHvfI1XwYw='; img-src data:; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Cj52f53TyuvXffZ+RyB5OF0JvE7H5YzucsVmCC6jFS0='; style-src 'sha256-CVcfCo4YlpOL8cb40dhn+Naf0rASR5v4GCnkTMsx4hQ='; img-src data:; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'none'">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#08090b">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='26' height='26' fill='%2308090b' stroke='%23f0aa42' stroke-width='3'/%3E%3Crect x='11' y='11' width='10' height='10' fill='%23f0aa42'/%3E%3C/svg%3E">
@@ -203,6 +203,8 @@
     }
     .btn:hover { border-color: var(--text-dim); background: var(--surface-3); }
     .btn:disabled { cursor: wait; opacity: .62; }
+    .btn[aria-pressed="true"] { border-color: var(--accent); background: transparent; color: var(--accent); }
+    .btn[aria-pressed="true"]:hover { border-color: #ffc45f; color: #ffc45f; }
     .btn-primary { border-color: var(--accent); background: var(--accent); color: #171108; }
     .btn-primary:hover { border-color: #ffc45f; background: #ffc45f; color: #171108; }
     .btn-arrow { min-width: 40px; padding-inline: 10px; font-size: 17px; line-height: 1; }
@@ -414,6 +416,27 @@
     .copy-value:hover { color: var(--accent); }
     .copy-value:focus-visible { outline-offset: 2px; }
     .empty-value { color: var(--text-faint); font-style: italic; }
+    .parameter-editor {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .parameter-value-input {
+      width: 100%;
+      min-width: 0;
+      min-height: 38px;
+      padding: 7px 10px;
+      border: 1px solid var(--control-border);
+      border-radius: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+    }
+    .parameter-value-input.is-dirty { border-color: var(--accent); }
+    .parameter-copy { min-height: 38px; }
+    .btn-save { min-width: 132px; }
     .row-meta {
       display: flex;
       gap: 8px 12px;
@@ -434,7 +457,62 @@
     }
     .meta-copy:hover { color: var(--text-dim); }
 
-    .script-head { gap: 9px; margin-bottom: 8px; flex-wrap: wrap; }
+    .script-card { padding: 0; }
+    .task-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      flex-wrap: wrap;
+    }
+    .script-head { gap: 9px; flex-wrap: wrap; }
+    .task-kind-script { border-color: #846a42; color: #f2c57d; }
+    .task-kind-sql { border-color: #4b7180; color: #8cd0d8; }
+    .task-tabs {
+      display: flex;
+      align-self: stretch;
+      border-left: 1px solid var(--border);
+    }
+    .task-tab {
+      min-width: 84px;
+      padding: 8px 13px;
+      border: 0;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-faint);
+      cursor: pointer;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .task-tab:last-child { border-right: 0; }
+    .task-tab:hover { color: var(--text); background: var(--surface-3); }
+    .task-tab[aria-selected="true"] {
+      border-bottom-color: var(--accent);
+      background: var(--bg);
+      color: var(--accent);
+    }
+    .task-tab-panel { padding: 11px 14px 14px; border-top: 1px solid var(--border-soft); }
+    .task-config-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .task-config-item { min-width: 0; padding: 8px 10px; border: 1px solid var(--border-soft); background: var(--bg); }
+    .task-config-label {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--text-faint);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .task-config-value { display: block; overflow-wrap: anywhere; color: var(--text-dim); font-family: var(--font-mono); font-size: 11px; }
     .script-group { align-items: flex-start; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
     .script-label {
       width: 46px;
@@ -462,6 +540,43 @@
     .chip-write { border-color: var(--blue); color: var(--blue); }
     .chip:hover { background: #24272c; }
     .none { color: var(--text-faint); font-size: 12px; }
+    .task-code-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .task-code-label {
+      color: var(--text-faint);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .task-code-copy { min-height: 32px; padding: 5px 10px; }
+    .task-code {
+      max-height: 360px;
+      margin: 0;
+      overflow: auto;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: #d8d9d5;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.65;
+      tab-size: 2;
+      white-space: pre;
+    }
+    .task-code-empty {
+      padding: 13px 14px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg);
+      color: var(--text-faint);
+      font-size: 12px;
+      line-height: 1.6;
+    }
 
     .empty-state {
       margin-top: 22px;
@@ -541,6 +656,10 @@
       .toolbar-actions { width: 100%; }
       .toolbar-actions .btn { flex: 1; }
       .package-facts { grid-template-columns: 1fr; }
+      .task-config-grid { grid-template-columns: 1fr; }
+      .task-card-head { align-items: stretch; }
+      .task-tabs { width: 100%; border-top: 1px solid var(--border); border-left: 0; }
+      .task-tab { flex: 1; }
       .script-label { width: auto; }
       .panel-head { align-items: flex-start; }
     }
@@ -562,7 +681,7 @@
         </svg>
         <h1 class="brand-name">DTSX Inspector</h1>
       </div>
-      <p class="brand-sub">Inspect SSIS parameters, scoped variables, and Script Task bindings locally.</p>
+      <p class="brand-sub">Inspect SSIS parameters, variables, Script Tasks, and SQL statements locally.</p>
     </header>
 
     <section class="input-panel" id="inputPanel" aria-label="Package input">
@@ -610,7 +729,7 @@
             <strong class="metric-value" id="metricVars">0</strong>
           </article>
           <article class="metric-card">
-            <span class="metric-label">Script Tasks</span>
+            <span class="metric-label">Tasks</span>
             <strong class="metric-value" id="metricScripts">0</strong>
           </article>
         </div>
@@ -646,12 +765,14 @@
       <div class="toolbar">
         <div class="filter-wrap">
           <label class="sr-only" for="filterInput">Filter results</label>
-          <input type="search" id="filterInput" placeholder="Filter parameters, variables, or Script Task bindings…" autocomplete="off">
+          <input type="search" id="filterInput" placeholder="Filter parameters, variables, task bindings, or code…" autocomplete="off">
           <span class="summary" id="summary"></span>
         </div>
         <div class="toolbar-actions">
           <button type="button" id="toggleAllBtn" class="btn" aria-controls="bodyParams bodyVars bodyScripts" aria-expanded="false">▸ Expand all</button>
           <button type="button" id="copyAllBtn" class="btn">Copy visible</button>
+          <button type="button" id="editParamsBtn" class="btn" aria-pressed="false" disabled>Edit parameters</button>
+          <button type="button" id="saveDtsxBtn" class="btn btn-save" disabled>Download DTSX</button>
           <button type="button" id="exportBtn" class="btn">Export JSON</button>
         </div>
       </div>
@@ -681,10 +802,10 @@
 
         <section class="panel panel-scripts" id="panelScripts" aria-labelledby="scriptsHeading">
           <div class="panel-head">
-            <h3 class="panel-title" id="scriptsHeading">Script Task Variables <span class="count" id="countScripts">0</span></h3>
+            <h3 class="panel-title" id="scriptsHeading">Script &amp; SQL Tasks <span class="count" id="countScripts">0</span></h3>
             <div class="panel-actions">
               <button type="button" class="btn" data-section-copy="scripts">Copy</button>
-              <button type="button" class="btn btn-arrow" data-panel-toggle="bodyScripts" data-panel-label="Script Task Variables" aria-label="Expand Script Task Variables" title="Expand Script Task Variables" aria-controls="bodyScripts" aria-expanded="false">▸</button>
+              <button type="button" class="btn btn-arrow" data-panel-toggle="bodyScripts" data-panel-label="Script and SQL Tasks" aria-label="Expand Script and SQL Tasks" title="Expand Script and SQL Tasks" aria-controls="bodyScripts" aria-expanded="false">▸</button>
             </div>
           </div>
           <div id="bodyScripts"></div>
@@ -749,6 +870,8 @@
       filterInput: document.getElementById('filterInput'),
       summary: document.getElementById('summary'),
       copyAllBtn: document.getElementById('copyAllBtn'),
+      editParamsBtn: document.getElementById('editParamsBtn'),
+      saveDtsxBtn: document.getElementById('saveDtsxBtn'),
       exportBtn: document.getElementById('exportBtn'),
       toggleAllBtn: document.getElementById('toggleAllBtn'),
       bodyParams: document.getElementById('bodyParams'),
@@ -773,7 +896,11 @@
         vars: [],
         scripts: [],
         notices: [],
-        query: ''
+        query: '',
+        rawXml: '',
+        fileHandle: null,
+        dirty: false,
+        editMode: false
       };
     }
 
@@ -920,11 +1047,18 @@
       };
     }
 
+    function parameterSearchText(item) {
+      return [item.name, item.value, typeLabel(item.dataType), item.dtsid, item.sensitive ? 'sensitive' : '', item.required ? 'required' : ''].join(' ').toLocaleLowerCase();
+    }
+
     function extractParameters(documentNode) {
       const results = [];
       const seen = new Set();
+      let sourceIndex = 0;
       for (const element of elementsByLocalName(documentNode, 'PackageParameter')) {
         if (!element.parentElement || localName(element.parentElement) !== 'PackageParameters') continue;
+        const currentSourceIndex = sourceIndex;
+        sourceIndex += 1;
         const dtsid = field(element, 'DTSID') || '';
         const name = field(element, 'ObjectName') || field(element, 'Name') || '(unnamed parameter)';
         const valueElement = directChildren(element, 'Property').find(item => attribute(item, 'Name') === 'ParameterValue');
@@ -937,11 +1071,13 @@
           name,
           dataType,
           value,
+          originalValue: value,
+          sourceIndex: currentSourceIndex,
           dtsid,
           sensitive: isTrue(field(element, 'Sensitive')),
           required: isTrue(field(element, 'Required'))
         };
-        item.searchText = [item.name, item.value, typeLabel(item.dataType), item.dtsid, item.sensitive ? 'sensitive' : '', item.required ? 'required' : ''].join(' ').toLocaleLowerCase();
+        item.searchText = parameterSearchText(item);
         results.push(item);
       }
       return results;
@@ -1002,37 +1138,170 @@
     }
 
     function isScriptTaskExecutable(element) {
-      return /scripttask/i.test(field(element, 'ExecutableType') || '');
+      return /scripttask/i.test([field(element, 'ExecutableType'), field(element, 'CreationName')].filter(Boolean).join(' '));
     }
 
-    function makeScriptItem(executable, source) {
+    function descendantByLocalNames(root, names) {
+      if (!root) return null;
+      const accepted = new Set(names.map(name => name.toLocaleLowerCase()));
+      return Array.from(root.getElementsByTagName('*')).find(element => accepted.has(localName(element).toLocaleLowerCase())) || null;
+    }
+
+    function ownedDescendantByLocalNames(executable, names) {
+      if (!executable) return null;
+      const accepted = new Set(names.map(name => name.toLocaleLowerCase()));
+      return Array.from(executable.getElementsByTagName('*')).find(element =>
+        accepted.has(localName(element).toLocaleLowerCase()) && closestAncestor(element, 'Executable') === executable
+      ) || null;
+    }
+
+    function projectItemName(item) {
+      return String(attribute(item, 'Name') || '').replace(/\\/g, '/').split('/').pop();
+    }
+
+    function isPrimaryScriptFile(item) {
+      return /^scriptmain\.(cs|vb|fs)$/i.test(projectItemName(item));
+    }
+
+    function isUsableSourceFile(item) {
+      const name = projectItemName(item);
+      return /\.(cs|vb|fs)$/i.test(name) && !/(\.designer\.|^assemblyinfo\.)/i.test(name);
+    }
+
+    function projectHasPrimarySource(project) {
+      return elementsByLocalName(project, 'ProjectItem').some(isPrimaryScriptFile);
+    }
+
+    function scriptSource(project) {
+      if (!project) return { code: '', status: 'No script project was found in this task.', fileName: '' };
+      const projectItems = elementsByLocalName(project, 'ProjectItem');
+      const sourceItem = projectItems.find(isPrimaryScriptFile) || projectItems.find(isUsableSourceFile);
+      if (sourceItem && sourceItem.textContent.trim()) {
+        return {
+          code: sourceItem.textContent.trim(),
+          status: '',
+          fileName: attribute(sourceItem, 'Name') || projectItemName(sourceItem),
+          encoding: attribute(sourceItem, 'Encoding') || ''
+        };
+      }
+
+      const codeElement = descendantByLocalNames(project, ['SourceCode', 'ScriptCode', 'Code']);
+      if (codeElement && codeElement.textContent.trim()) return { code: codeElement.textContent.trim(), status: '', fileName: localName(codeElement) };
+
+      const attributeCode = attribute(project, 'SourceCode') || attribute(project, 'Code');
+      if (attributeCode) return { code: attributeCode, status: '', fileName: 'Embedded source' };
+
+      const binaryItem = elementsByLocalName(project, 'BinaryItem')[0];
+      if (binaryItem) {
+        return {
+          code: '',
+          status: 'This package contains only the compiled VSTA project. Plain source code is not present in the DTSX XML.',
+          fileName: ''
+        };
+      }
+      return { code: '', status: 'No plain-text source code is stored in this Script Task.', fileName: '' };
+    }
+
+    function makeScriptItem(executable, source, project) {
       const readOnly = splitBindings(scriptBindingValue(source, 'ReadOnlyVariables') || scriptBindingValue(executable, 'ReadOnlyVariables'));
       const readWrite = splitBindings(scriptBindingValue(source, 'ReadWriteVariables') || scriptBindingValue(executable, 'ReadWriteVariables'));
       const fallbackName = attribute(source, 'Name') || '(script task)';
       const taskName = executable ? displayName(executable, fallbackName) : fallbackName;
       const taskScope = executable && source === executable ? `${scopeFor(executable)} / ${taskName}` : (executable ? scopeFor(source) : 'Package / fragment');
+      const sourceCode = scriptSource(project);
       const item = {
         name: taskName,
+        kind: 'Script Task',
+        taskType: 'script',
         language: attribute(source, 'Language') || field(source, 'ScriptLanguage') || '',
         scope: taskScope,
         readOnly: readOnly.map(name => ({ name })),
-        readWrite: readWrite.map(name => ({ name }))
+        readWrite: readWrite.map(name => ({ name })),
+        code: sourceCode.code,
+        codeStatus: sourceCode.status,
+        config: {
+          project: project ? (attribute(project, 'Name') || 'Embedded project') : 'Not available',
+          sourceFile: sourceCode.fileName || 'Not available',
+          encoding: sourceCode.encoding || 'Not specified',
+          entryPoint: field(source, 'EntryPoint') || 'Main',
+          language: attribute(source, 'Language') || field(source, 'ScriptLanguage') || 'Not available'
+        }
       };
-      const searchable = [item.name, item.language, item.scope, ...readOnly, ...readWrite].join(' ').toLocaleLowerCase();
+      item.bindingSearchText = [...readOnly, ...readWrite].join(' ').toLocaleLowerCase();
+      item.baseSearchText = [item.name, item.kind, item.language, item.scope, item.code, sourceCode.status, ...Object.values(item.config)].join(' ').toLocaleLowerCase();
+      const searchable = `${item.baseSearchText} ${item.bindingSearchText}`;
       item.searchText = `${searchable} ${searchable.replace(/[^a-z0-9]+/g, ' ')}`;
       return item;
     }
 
-    function extractScripts(documentNode) {
+    function isSqlTaskExecutable(element) {
+      const identity = [field(element, 'ExecutableType'), field(element, 'CreationName')].filter(Boolean).join(' ');
+      return /execute\s*sql|executesqltask/i.test(identity) || Boolean(ownedDescendantByLocalNames(element, ['SqlTaskData']));
+    }
+
+    function sqlField(element, names, preserveWhitespace = false) {
+      for (const name of names) {
+        const value = field(element, name, preserveWhitespace);
+        if (value !== null && value !== undefined && value !== '') return value;
+      }
+      return '';
+    }
+
+    function makeSqlItem(executable) {
+      const sqlData = ownedDescendantByLocalNames(executable, ['SqlTaskData']);
+      const statement = sqlData ? sqlField(sqlData, ['SqlStatementSource', 'SQLStatementSource', 'SqlStatement'], true) : '';
+      const sourceType = sqlData ? sqlField(sqlData, ['SqlStmtSourceType', 'SqlStatementSourceType']) : '';
+      const item = {
+        name: displayName(executable, '(execute SQL task)'),
+        kind: 'Execute SQL Task',
+        taskType: 'sql',
+        language: 'T-SQL',
+        scope: `${scopeFor(executable)} / ${displayName(executable, '(execute SQL task)')}`,
+        readOnly: [],
+        readWrite: [],
+        code: statement,
+        codeStatus: statement ? '' : 'No inline SQL statement was found. The task may read SQL from a variable or file connection.',
+        config: {
+          connection: sqlData ? (sqlField(sqlData, ['Connection', 'ConnectionName']) || 'Not available') : 'Not available',
+          resultType: sqlData ? (sqlField(sqlData, ['ResultType']) || 'Not specified') : 'Not specified',
+          sourceType: sourceType || 'Direct input or unspecified',
+          timeout: sqlData ? (sqlField(sqlData, ['TimeOut', 'Timeout']) || 'Not specified') : 'Not specified'
+        }
+      };
+      item.bindingSearchText = '';
+      item.baseSearchText = [item.name, item.kind, item.language, item.scope, item.code, item.codeStatus, ...Object.values(item.config)].join(' ').toLocaleLowerCase();
+      const searchable = item.baseSearchText;
+      item.searchText = `${searchable} ${searchable.replace(/[^a-z0-9]+/g, ' ')}`;
+      return item;
+    }
+
+    function extractTasks(documentNode) {
       const results = [];
       const consumedProjects = new Set();
+      const consumedExecutables = new Set();
       const projectByExecutable = new Map();
       const bindingSourceByExecutable = new Map();
       const projects = elementsByLocalName(documentNode, 'ScriptProject');
+      const executables = elementsByLocalName(documentNode, 'Executable');
+      const orphanProjects = [];
 
       for (const project of projects) {
         const executable = closestAncestor(project, 'Executable');
-        if (executable && !projectByExecutable.has(executable)) projectByExecutable.set(executable, project);
+        if (!executable) {
+          orphanProjects.push(project);
+          continue;
+        }
+        const current = projectByExecutable.get(executable);
+        if (!current || (!projectHasPrimarySource(current) && projectHasPrimarySource(project))) {
+          projectByExecutable.set(executable, project);
+        }
+      }
+
+      const orphanExecutables = executables
+        .filter(executable => isScriptTaskExecutable(executable) && !projectByExecutable.has(executable))
+        .sort((a, b) => displayName(a, '').localeCompare(displayName(b, ''), undefined, { numeric: true, sensitivity: 'base' }));
+      for (const [index, executable] of orphanExecutables.entries()) {
+        if (orphanProjects[index]) projectByExecutable.set(executable, orphanProjects[index]);
       }
 
       for (const element of documentNode.getElementsByTagName('*')) {
@@ -1041,19 +1310,27 @@
         if (executable && !bindingSourceByExecutable.has(executable)) bindingSourceByExecutable.set(executable, element);
       }
 
-      for (const executable of elementsByLocalName(documentNode, 'Executable')) {
+      for (const executable of executables) {
         const project = projectByExecutable.get(executable);
         const bindingSource = bindingSourceByExecutable.get(executable) || project;
         if (!isScriptTaskExecutable(executable) && !project) continue;
         const source = bindingSource || executable;
         if (project) consumedProjects.add(project);
-        results.push(makeScriptItem(executable, source));
+        consumedExecutables.add(executable);
+        results.push(makeScriptItem(executable, source, project));
       }
 
       for (const project of projects) {
         if (consumedProjects.has(project)) continue;
-        results.push(makeScriptItem(closestAncestor(project, 'Executable'), project));
+        if (closestAncestor(project, 'Executable')) continue;
+        results.push(makeScriptItem(closestAncestor(project, 'Executable'), project, project));
       }
+
+      for (const executable of executables) {
+        if (consumedExecutables.has(executable) || !isSqlTaskExecutable(executable)) continue;
+        results.push(makeSqlItem(executable));
+      }
+      results.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
       return results;
     }
 
@@ -1068,7 +1345,7 @@
     function extractData(documentNode, filename) {
       const params = extractParameters(documentNode);
       const vars = extractVariables(documentNode);
-      const scripts = extractScripts(documentNode);
+      const scripts = extractTasks(documentNode);
       const data = {
         filename,
         metadata: packageMetadata(documentNode, filename),
@@ -1107,6 +1384,32 @@
       return meta.childElementCount ? meta : null;
     }
 
+    function parameterEditor(item) {
+      const editor = createElement('div', 'parameter-editor');
+      const input = createElement('input', 'parameter-value-input');
+      input.type = 'text';
+      input.value = item.value;
+      input.dataset.parameterIndex = String(item.sourceIndex);
+      input.autocomplete = 'off';
+      input.spellcheck = false;
+      input.setAttribute('aria-label', `Edit value for parameter ${item.name}`);
+      input.title = `Edit value for ${item.name}`;
+      const copy = copyButton(item.value, `Copy value for ${item.name}`, 'btn parameter-copy', 'Copy');
+      item.inputNode = input;
+      item.copyNode = copy;
+      editor.append(input, copy);
+      return editor;
+    }
+
+    function parameterValueDisplay(item) {
+      const shownValue = item.value;
+      const label = `Copy value for ${item.name}`;
+      const button = copyButton(shownValue, label, `copy-value${shownValue === '' ? ' empty-value' : ''}`, shownValue === '' ? 'No value' : shownValue);
+      item.inputNode = null;
+      item.copyNode = button;
+      return button;
+    }
+
     function resultRow(item, kind) {
       const row = createElement('article', 'result-row');
       const main = createElement('div', 'row-main');
@@ -1117,13 +1420,18 @@
       main.append(badge(typeLabel(item.dataType)));
       if (kind === 'parameter' && item.sensitive) main.append(badge('Sensitive', 'badge-sensitive'));
       if (kind === 'parameter' && item.required) main.append(badge('Required'));
+      if (kind === 'parameter' && !state.editMode && item.value !== item.originalValue) main.append(badge('Edited', 'badge-sensitive'));
       if (kind === 'variable' && item.evaluateAsExpression) main.append(badge('Expression', 'badge-expression'));
       if (kind === 'variable' && item.readOnly) main.append(badge('Read only'));
       row.append(main);
 
-      const shownValue = kind === 'variable' && item.expression ? item.expression : item.value;
-      const valueLabel = kind === 'variable' && item.expression ? `Copy expression for ${item.qualifiedName}` : `Copy value for ${item.name}`;
-      row.append(copyButton(shownValue, valueLabel, `copy-value${shownValue === '' ? ' empty-value' : ''}`, shownValue === '' ? 'No value' : shownValue));
+      if (kind === 'parameter') {
+        row.append(state.editMode ? parameterEditor(item) : parameterValueDisplay(item));
+      } else {
+        const shownValue = item.expression || item.value;
+        const valueLabel = item.expression ? `Copy expression for ${item.qualifiedName}` : `Copy value for ${item.name}`;
+        row.append(copyButton(shownValue, valueLabel, `copy-value${shownValue === '' ? ' empty-value' : ''}`, shownValue === '' ? 'No value' : shownValue));
+      }
 
       const extras = [];
       if (kind === 'variable') {
@@ -1153,15 +1461,92 @@
       return group;
     }
 
-    function scriptCard(item) {
+    function taskConfigItem(label, value) {
+      const cell = createElement('div', 'task-config-item');
+      cell.append(createElement('span', 'task-config-label', label), createElement('span', 'task-config-value', value || 'Not available'));
+      return cell;
+    }
+
+    function taskTab(label, targetId, selected) {
+      const button = createElement('button', 'task-tab', label);
+      button.type = 'button';
+      button.id = `${targetId}-tab`;
+      button.setAttribute('role', 'tab');
+      button.dataset.taskTab = targetId;
+      button.setAttribute('aria-controls', targetId);
+      button.setAttribute('aria-selected', String(selected));
+      button.tabIndex = selected ? 0 : -1;
+      return button;
+    }
+
+    function scriptCard(item, index) {
       const card = createElement('article', 'script-card');
+      const cardHead = createElement('div', 'task-card-head');
       const head = createElement('div', 'script-head');
       head.append(createElement('span', 'script-name', item.name));
+      head.append(badge(item.kind, item.taskType === 'sql' ? 'task-kind-sql' : 'task-kind-script'));
       if (item.language) head.append(badge(item.language));
-      card.append(head, bindingGroup('Read', item.readOnly, 'chip-read'), bindingGroup('Write', item.readWrite, 'chip-write'));
+
+      const configId = `task-${index}-config`;
+      const codeId = `task-${index}-code`;
+      const tabs = createElement('div', 'task-tabs');
+      tabs.setAttribute('role', 'tablist');
+      tabs.setAttribute('aria-label', `${item.name} views`);
+      tabs.append(taskTab('Config', configId, true), taskTab('Code', codeId, false));
+      cardHead.append(head, tabs);
+      card.append(cardHead);
+
+      const configPanel = createElement('div', 'task-tab-panel');
+      configPanel.id = configId;
+      configPanel.setAttribute('role', 'tabpanel');
+      configPanel.setAttribute('aria-labelledby', `${configId}-tab`);
+      configPanel.dataset.taskPanel = 'config';
+      const configGrid = createElement('div', 'task-config-grid');
+      if (item.taskType === 'sql') {
+        configGrid.append(
+          taskConfigItem('Connection', item.config.connection),
+          taskConfigItem('Result type', item.config.resultType),
+          taskConfigItem('SQL source', item.config.sourceType),
+          taskConfigItem('Timeout', item.config.timeout)
+        );
+      } else {
+        configGrid.append(
+          taskConfigItem('Project', item.config.project),
+          taskConfigItem('Source file', item.config.sourceFile),
+          taskConfigItem('Encoding', item.config.encoding),
+          taskConfigItem('Entry point', item.config.entryPoint),
+          taskConfigItem('Language', item.config.language)
+        );
+      }
+      configPanel.append(configGrid);
+      if (item.taskType === 'script') {
+        configPanel.append(bindingGroup('Read', item.readOnly, 'chip-read'), bindingGroup('Write', item.readWrite, 'chip-write'));
+      }
       const meta = createElement('div', 'row-meta');
       meta.append(createElement('span', '', `Scope · ${item.scope}`));
-      card.append(meta);
+      configPanel.append(meta);
+
+      const codePanel = createElement('div', 'task-tab-panel');
+      codePanel.id = codeId;
+      codePanel.setAttribute('role', 'tabpanel');
+      codePanel.setAttribute('aria-labelledby', `${codeId}-tab`);
+      codePanel.dataset.taskPanel = 'code';
+      codePanel.hidden = true;
+      if (item.code) {
+        const codeToolbar = createElement('div', 'task-code-toolbar');
+        codeToolbar.append(
+          createElement('span', 'task-code-label', item.taskType === 'sql' ? 'SQL query' : (item.config.sourceFile || 'Source code')),
+          copyButton(item.code, `Copy code for ${item.name}`, 'btn task-code-copy', item.taskType === 'sql' ? 'Copy query' : 'Copy code')
+        );
+        const code = createElement('pre', 'task-code', item.code);
+        code.tabIndex = 0;
+        code.setAttribute('aria-label', `${item.name} code`);
+        codePanel.append(codeToolbar, code);
+      } else {
+        codePanel.append(createElement('div', 'task-code-empty', item.codeStatus));
+      }
+
+      card.append(configPanel, codePanel);
       return card;
     }
 
@@ -1174,8 +1559,8 @@
       if (!items.length) {
         fragment.append(emptyPanel(emptyMessage));
       } else {
-        for (const item of items) {
-          item.node = factory(item);
+        for (const [index, item] of items.entries()) {
+          item.node = factory(item, index);
           fragment.append(item.node);
         }
       }
@@ -1237,11 +1622,13 @@
       renderNotices(state.notices);
       renderCollection(refs.bodyParams, state.params, item => resultRow(item, 'parameter'), 'No package parameters found.');
       renderCollection(refs.bodyVars, state.vars, item => resultRow(item, 'variable'), 'No variables found.');
-      renderCollection(refs.bodyScripts, state.scripts, scriptCard, 'No Script Task variable bindings found.');
+      renderCollection(refs.bodyScripts, state.scripts, scriptCard, 'No Script Tasks or Execute SQL Tasks found.');
       setAllPanelsCollapsed(true);
       refs.hideInputBtn.disabled = false;
       refs.results.hidden = false;
       refs.emptyState.hidden = true;
+      updateSaveButton();
+      updateEditControls();
       applyFilter();
     }
 
@@ -1278,13 +1665,27 @@
           let groupMatches = 0;
           for (const chip of group.querySelectorAll('[data-binding-search]')) {
             const matches = !state.query || chip.dataset.bindingSearch.includes(state.query);
-            chip.hidden = !matches;
+            chip.hidden = Boolean(state.query) && !matches;
             if (matches) groupMatches += 1;
           }
           group.hidden = Boolean(state.query) && groupMatches === 0;
           matchingBindings += groupMatches;
         }
-        const matches = !state.query || matchingBindings > 0;
+        const baseMatches = Boolean(state.query) && item.baseSearchText.includes(state.query);
+        const matches = !state.query || matchingBindings > 0 || baseMatches;
+        if (state.query && matchingBindings > 0) {
+          const configTab = item.node?.querySelector('[data-task-tab$="-config"]');
+          if (configTab) selectTaskTab(configTab);
+        } else if (state.query && item.code.toLocaleLowerCase().includes(state.query)) {
+          const codeTab = item.node?.querySelector('[data-task-tab$="-code"]');
+          if (codeTab) selectTaskTab(codeTab);
+        }
+        if (baseMatches && matchingBindings === 0) {
+          for (const group of item.node?.querySelectorAll('[data-binding-group]') || []) {
+            group.hidden = false;
+            for (const chip of group.querySelectorAll('[data-binding-search]')) chip.hidden = false;
+          }
+        }
         if (item.node) item.node.hidden = !matches;
         if (matches) visible += 1;
       }
@@ -1292,7 +1693,7 @@
       let filterEmpty = refs.bodyScripts.querySelector('[data-filter-empty]');
       if (state.scripts.length && visible === 0) {
         if (!filterEmpty) {
-          filterEmpty = emptyPanel('No Script Task variables match this filter.');
+          filterEmpty = emptyPanel('No task configuration, binding, or code matches this filter.');
           filterEmpty.dataset.filterEmpty = 'true';
           refs.bodyScripts.append(filterEmpty);
         }
@@ -1312,7 +1713,7 @@
       const visible = visibleParams + visibleVars + visibleScripts;
       refs.summary.textContent = state.query
         ? `${visible} of ${total} results visible`
-        : `${state.params.length} parameter${state.params.length === 1 ? '' : 's'} · ${state.vars.length} variable${state.vars.length === 1 ? '' : 's'} · ${state.scripts.length} Script Task${state.scripts.length === 1 ? '' : 's'}`;
+        : `${state.params.length} parameter${state.params.length === 1 ? '' : 's'} · ${state.vars.length} variable${state.vars.length === 1 ? '' : 's'} · ${state.scripts.length} task${state.scripts.length === 1 ? '' : 's'}`;
     }
 
     function setStatus(message, type = '') {
@@ -1333,13 +1734,19 @@
       requestAnimationFrame(() => {
         try {
           const documentNode = parseXml(raw);
-          state = extractData(documentNode, state.filename);
+          const filename = state.filename;
+          const fileHandle = state.fileHandle;
+          state = extractData(documentNode, filename);
+          state.rawXml = raw;
+          state.fileHandle = fileHandle;
+          state.dirty = false;
+          state.editMode = false;
           refs.filterInput.value = '';
           renderInitial();
           const total = state.params.length + state.vars.length + state.scripts.length;
           const message = total
-            ? `Parsed successfully: ${state.params.length} parameter${state.params.length === 1 ? '' : 's'}, ${state.vars.length} variable${state.vars.length === 1 ? '' : 's'}, ${state.scripts.length} Script Task${state.scripts.length === 1 ? '' : 's'}.`
-            : 'Package parsed successfully, but no supported parameters, variables, or Script Task bindings were found.';
+            ? `Parsed successfully: ${state.params.length} parameter${state.params.length === 1 ? '' : 's'}, ${state.vars.length} variable${state.vars.length === 1 ? '' : 's'}, ${state.scripts.length} task${state.scripts.length === 1 ? '' : 's'}.`
+            : 'Package parsed successfully, but no supported parameters, variables, Script Tasks, or Execute SQL Tasks were found.';
           setStatus(message, total ? 'ok' : 'warn');
         } catch (error) {
           refs.results.hidden = true;
@@ -1356,7 +1763,7 @@
       return /\.(dtsx|xml)$/i.test(filename);
     }
 
-    function loadFile(file) {
+    function loadFile(file, fileHandle = null) {
       if (!file) return;
       if (!extensionAllowed(file.name)) {
         setStatus('Choose a .dtsx or .xml file. MIME types vary between systems, so the filename extension is used for this check.', 'error');
@@ -1370,7 +1777,9 @@
       reader.onerror = () => setStatus('The browser could not read this file. Check that it is accessible and try again.', 'error');
       reader.onload = () => {
         state.filename = file.name;
-        refs.sourceLine.textContent = `${file.name} · ${formatBytes(file.size)}`;
+        state.fileHandle = fileHandle;
+        state.dirty = false;
+        refs.sourceLine.textContent = `${file.name} · ${formatBytes(file.size)}${fileHandle ? ' · Editable' : ''}`;
         refs.xmlInput.value = String(reader.result || '');
         parseCurrentInput();
       };
@@ -1381,6 +1790,162 @@
       if (bytes < 1024) return `${bytes} B`;
       if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
       return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    async function loadFileButtonClick() {
+      if (typeof window.showOpenFilePicker === 'function') {
+        try {
+          const [handle] = await window.showOpenFilePicker({
+            multiple: false,
+            types: [{ description: 'SSIS package', accept: { 'application/xml': ['.dtsx', '.xml'] } }]
+          });
+          const file = await handle.getFile();
+          loadFile(file, handle);
+          return;
+        } catch (error) {
+          if (error && error.name === 'AbortError') return;
+        }
+      }
+      refs.fileInput.click();
+    }
+
+    function updateSaveButton() {
+      const canSave = Boolean(state.rawXml && state.params.length && state.dirty);
+      refs.saveDtsxBtn.disabled = !canSave;
+      refs.saveDtsxBtn.textContent = state.fileHandle ? 'Save DTSX' : 'Download DTSX';
+      refs.saveDtsxBtn.title = state.fileHandle
+        ? 'Write edited parameter values back to the selected DTSX file'
+        : 'Download a DTSX copy containing the edited parameter values';
+    }
+
+    function updateEditControls() {
+      const hasParams = Boolean(state.params.length);
+      refs.editParamsBtn.disabled = !hasParams;
+      refs.editParamsBtn.setAttribute('aria-pressed', String(state.editMode));
+      refs.editParamsBtn.textContent = state.editMode ? 'Done editing' : 'Edit parameters';
+      refs.editParamsBtn.title = state.editMode
+        ? 'Finish editing and return parameter values to read-only display'
+        : 'Edit package parameter values';
+    }
+
+    function setEditMode(enabled) {
+      if (!state.params.length) return;
+      state.editMode = enabled;
+      renderCollection(refs.bodyParams, state.params, item => resultRow(item, 'parameter'), 'No package parameters found.');
+      updateEditControls();
+      if (enabled) {
+        const paramsToggle = document.querySelector('[data-panel-toggle="bodyParams"]');
+        if (paramsToggle && paramsToggle.getAttribute('aria-expanded') === 'false') {
+          setPanelCollapsed(paramsToggle, false);
+          updateToggleAllButton();
+        }
+      }
+      applyFilter();
+    }
+
+    function editableDocument(raw) {
+      const source = String(raw || '').replace(/^\uFEFF/, '');
+      if (/<!DOCTYPE\b|<!ENTITY\b/i.test(source)) throw new InspectorError('DTD and entity declarations are not accepted.');
+      const documentNode = new DOMParser().parseFromString(source, 'application/xml');
+      const error = parserMessage(documentNode);
+      if (error) throw new InspectorError('Saving requires a complete, valid DTSX document rather than a partial XML fragment.');
+      validateTree(documentNode);
+      return documentNode;
+    }
+
+    function setParameterElementValue(element, value) {
+      const valueElement = directChildren(element, 'Property').find(item => attribute(item, 'Name') === 'ParameterValue');
+      if (valueElement) {
+        valueElement.textContent = value;
+        return;
+      }
+      const valueAttribute = Array.from(element.attributes || []).find(item => localName(item) === 'Value');
+      if (valueAttribute) {
+        valueAttribute.value = value;
+        return;
+      }
+      if (element.namespaceURI && element.prefix) {
+        element.setAttributeNS(element.namespaceURI, `${element.prefix}:Value`, value);
+      } else {
+        element.setAttribute('Value', value);
+      }
+    }
+
+    function buildUpdatedDtsx() {
+      const documentNode = editableDocument(state.rawXml);
+      const parameterElements = elementsByLocalName(documentNode, 'PackageParameter')
+        .filter(element => element.parentElement && localName(element.parentElement) === 'PackageParameters');
+      for (const item of state.params) {
+        if (item.value === item.originalValue) continue;
+        const element = parameterElements[item.sourceIndex];
+        if (!element) throw new InspectorError(`Parameter ${item.name} could not be mapped back to the source document.`);
+        setParameterElementValue(element, item.value);
+      }
+      let updated = new XMLSerializer().serializeToString(documentNode);
+      const declaration = String(state.rawXml).match(/^\uFEFF?(<\?xml[\s\S]*?\?>)/i);
+      if (declaration && !/^<\?xml/i.test(updated)) updated = `${declaration[1]}\n${updated}`;
+      if (String(state.rawXml).includes('\r\n')) updated = updated.replace(/\r?\n/g, '\r\n');
+      if (String(state.rawXml).startsWith('\uFEFF')) updated = `\uFEFF${updated}`;
+      parseXml(updated);
+      return updated;
+    }
+
+    function downloadUpdatedDtsx(updated) {
+      const blob = new Blob([updated], { type: 'application/xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const source = (state.filename || 'package.dtsx').replace(/\.(dtsx|xml)$/i, '').replace(/[^a-z0-9._-]+/gi, '_').slice(0, 80) || 'package';
+      link.href = url;
+      link.download = `${source}.edited.dtsx`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    }
+
+    function commitParameterChanges(updated) {
+      state.rawXml = updated;
+      refs.xmlInput.value = updated;
+      for (const item of state.params) {
+        item.originalValue = item.value;
+        item.searchText = parameterSearchText(item);
+        if (item.inputNode) item.inputNode.classList.remove('is-dirty');
+      }
+      state.dirty = false;
+      updateSaveButton();
+    }
+
+    async function saveUpdatedDtsx() {
+      if (!state.dirty) return;
+      refs.saveDtsxBtn.disabled = true;
+      const changedSensitive = state.params.some(item => item.sensitive && item.value !== item.originalValue);
+      try {
+        const updated = buildUpdatedDtsx();
+        if (state.fileHandle && typeof state.fileHandle.createWritable === 'function') {
+          try {
+            const writable = await state.fileHandle.createWritable();
+            await writable.write(updated);
+            await writable.close();
+            commitParameterChanges(updated);
+            const sensitiveNote = changedSensitive ? ' Review the package protection settings because a sensitive value changed.' : '';
+            setStatus(`Saved parameter changes to ${state.filename}. Visual Studio may ask you to reload the externally changed file.${sensitiveNote}`, changedSensitive ? 'warn' : 'ok');
+            showToast('DTSX parameter changes saved');
+            return;
+          } catch {
+            downloadUpdatedDtsx(updated);
+            commitParameterChanges(updated);
+            setStatus('Direct file saving was denied, so an updated DTSX copy was downloaded instead.', 'warn');
+            return;
+          }
+        }
+        downloadUpdatedDtsx(updated);
+        commitParameterChanges(updated);
+        const sensitiveNote = changedSensitive ? ' Review sensitive values in SSDT before running the package.' : '';
+        setStatus(`Updated DTSX downloaded. Replace or reopen the project file in Visual Studio after reviewing it.${sensitiveNote}`, changedSensitive ? 'warn' : 'ok');
+      } catch (error) {
+        setStatus(error instanceof InspectorError ? error.message : 'The edited DTSX could not be created.', 'error');
+        updateSaveButton();
+      }
     }
 
     function showToast(message) {
@@ -1423,20 +1988,20 @@
         return ['Name\tNamespace\tType\tValue/Expression\tScope\tDTSID', ...filter(state.vars).map(item => [item.name, item.namespace, typeLabel(item.dataType), item.expression || item.value, item.scope, item.dtsid].map(tsvCell).join('\t'))].join('\n');
       }
       if (section === 'scripts') {
-        return ['Task\tRead\tWrite\tScope', ...filter(state.scripts).map(item => [item.name, item.readOnly.map(binding => binding.name).join('; '), item.readWrite.map(binding => binding.name).join('; '), item.scope].map(tsvCell).join('\t'))].join('\n');
+        return ['Task\tType\tRead\tWrite\tScope\tCode / SQL', ...filter(state.scripts).map(item => [item.name, item.kind, item.readOnly.map(binding => binding.name).join('; '), item.readWrite.map(binding => binding.name).join('; '), item.scope, item.code || item.codeStatus].map(tsvCell).join('\t'))].join('\n');
       }
       return '';
     }
 
     function exportData() {
-      const cleanParams = state.params.map(({ node, searchText, ...item }) => item);
+      const cleanParams = state.params.map(({ node, searchText, inputNode, copyNode, originalValue, sourceIndex, ...item }) => item);
       const cleanVars = state.vars.map(({ node, searchText, ...item }) => item);
       const cleanScripts = state.scripts.map(({ node, searchText, ...item }) => item);
       const payload = {
         source: state.metadata,
         parameters: cleanParams,
         variables: cleanVars,
-        scriptTasks: cleanScripts,
+        tasks: cleanScripts,
         notices: state.notices
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
@@ -1452,6 +2017,19 @@
       showToast('JSON export created locally');
     }
 
+    function selectTaskTab(button, focus = false) {
+      const card = button.closest('.script-card');
+      if (!card) return;
+      for (const tab of card.querySelectorAll('[data-task-tab]')) {
+        const selected = tab === button;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        const panel = document.getElementById(tab.dataset.taskTab);
+        if (panel) panel.hidden = !selected;
+      }
+      if (focus) button.focus();
+    }
+
     function reset() {
       state = emptyState();
       refs.xmlInput.value = '';
@@ -1464,6 +2042,8 @@
       refs.noticeList.replaceChildren();
       setInputHidden(false);
       refs.hideInputBtn.disabled = true;
+      updateSaveButton();
+      updateEditControls();
       setStatus('');
       refs.xmlInput.focus();
     }
@@ -1480,13 +2060,18 @@
     refs.parseBtn.addEventListener('click', parseCurrentInput);
     refs.hideInputBtn.addEventListener('click', () => setInputHidden(!refs.inputPanelBody.hidden));
     refs.clearBtn.addEventListener('click', reset);
-    refs.loadFileBtn.addEventListener('click', () => refs.fileInput.click());
+    refs.loadFileBtn.addEventListener('click', loadFileButtonClick);
     refs.fileInput.addEventListener('change', event => loadFile(event.target.files[0]));
+    refs.editParamsBtn.addEventListener('click', () => setEditMode(!state.editMode));
     refs.xmlInput.addEventListener('input', () => {
       if (state.filename) {
         state.filename = '';
         refs.sourceLine.textContent = 'Pasted or edited XML';
       }
+      state.fileHandle = null;
+      state.rawXml = '';
+      state.dirty = false;
+      updateSaveButton();
       if (!refs.results.hidden) setStatus('Input changed. Parse again to refresh the results.', 'warn');
     });
     refs.xmlInput.addEventListener('keydown', event => {
@@ -1499,10 +2084,29 @@
       cancelAnimationFrame(filterFrame);
       filterFrame = requestAnimationFrame(applyFilter);
     });
+    refs.results.addEventListener('input', event => {
+      const input = event.target.closest('[data-parameter-index]');
+      if (!input) return;
+      const sourceIndex = Number.parseInt(input.dataset.parameterIndex, 10);
+      const item = state.params.find(parameter => parameter.sourceIndex === sourceIndex);
+      if (!item) return;
+      item.value = input.value;
+      item.searchText = parameterSearchText(item);
+      input.classList.toggle('is-dirty', item.value !== item.originalValue);
+      if (item.copyNode) copyValues.set(item.copyNode, item.value);
+      state.dirty = state.params.some(parameter => parameter.value !== parameter.originalValue);
+      updateSaveButton();
+      if (state.query) applyFilter();
+    });
     refs.results.addEventListener('click', event => {
       const copyTarget = event.target.closest('[data-copy-value]');
       if (copyTarget && copyValues.has(copyTarget)) {
         copyText(copyValues.get(copyTarget));
+        return;
+      }
+      const taskTabButton = event.target.closest('[data-task-tab]');
+      if (taskTabButton) {
+        selectTaskTab(taskTabButton);
         return;
       }
       const sectionButton = event.target.closest('[data-section-copy]');
@@ -1516,6 +2120,19 @@
         updateToggleAllButton();
       }
     });
+    refs.results.addEventListener('keydown', event => {
+      const current = event.target.closest('[data-task-tab]');
+      if (!current || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      const tabs = Array.from(current.closest('[role="tablist"]').querySelectorAll('[data-task-tab]'));
+      const index = tabs.indexOf(current);
+      let next = index;
+      if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+      if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+      if (event.key === 'Home') next = 0;
+      if (event.key === 'End') next = tabs.length - 1;
+      event.preventDefault();
+      selectTaskTab(tabs[next], true);
+    });
     refs.toggleAllBtn.addEventListener('click', () => {
       const shouldCollapse = panelToggleButtons().some(button => button.getAttribute('aria-expanded') === 'true');
       setAllPanelsCollapsed(shouldCollapse);
@@ -1524,7 +2141,14 @@
       const sections = ['params', 'vars', 'scripts'].map(section => sectionText(section)).filter(text => text.split('\n').length > 1);
       copyText(sections.join('\n\n'));
     });
+    refs.saveDtsxBtn.addEventListener('click', saveUpdatedDtsx);
     refs.exportBtn.addEventListener('click', exportData);
+    document.addEventListener('keydown', event => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLocaleLowerCase() === 's' && state.dirty) {
+        event.preventDefault();
+        saveUpdatedDtsx();
+      }
+    });
 
     for (const eventName of ['dragenter', 'dragover']) {
       refs.inputPanel.addEventListener(eventName, event => {
@@ -1539,8 +2163,23 @@
         refs.inputPanel.classList.remove('is-dragging');
       });
     }
-    refs.inputPanel.addEventListener('drop', event => {
-      const files = event.dataTransfer && event.dataTransfer.files;
+    refs.inputPanel.addEventListener('drop', async event => {
+      const dataTransfer = event.dataTransfer;
+      if (!dataTransfer) return;
+      const item = dataTransfer.items && Array.from(dataTransfer.items).find(entry => entry.kind === 'file');
+      if (item && typeof item.getAsFileSystemHandle === 'function') {
+        try {
+          const handle = await item.getAsFileSystemHandle();
+          if (handle && handle.kind === 'file') {
+            const file = await handle.getFile();
+            loadFile(file, handle);
+            return;
+          }
+        } catch {
+          // Use the read-only file object below when a writable handle is unavailable.
+        }
+      }
+      const files = dataTransfer.files;
       if (files && files.length) loadFile(files[0]);
     });
   })();
